@@ -4,98 +4,53 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Neptune</title>
-    <meta name="robots" content="noindex, nofollow">
     <style>
-      @font-face { font-family: "Silkscreen"; src: url("fonts/Silkscreen-Regular.ttf") format("truetype"); font-display: swap; }
-      @font-face { font-family: "Space Grotesk"; src: url("fonts/SpaceGrotesk-Regular.ttf") format("truetype"); font-weight: 400; font-display: swap; }
-      @font-face { font-family: "Space Grotesk"; src: url("fonts/SpaceGrotesk-Bold.ttf") format("truetype"); font-weight: 700; font-display: swap; }
-      @font-face { font-family: "Space Mono"; src: url("fonts/SpaceMono-Regular.ttf") format("truetype"); font-display: swap; }
-
       :root {
-        --pink: #ff5ad8;
-        --pink-light: #ff86e3;
-        --cyan: #3cf2ff;
-        --ink: #05050d;
-        --panel: rgba(9, 8, 22, 0.92);
-        --field: #11102a;
-        --field-border: #3d3870;
-        --text: #f4f1ff;
-        --muted: #b3aed6;
+        --bg: #0b0d1c;
+        --panel: #14172b;
+        --border: #343a63;
+        --text: #dfe4ff;
+        --muted: #8b92c2;
+        --accent: #ff6fa8;
         --danger: #ff8a8a;
-        --display: "Silkscreen", "Courier New", monospace;
-        --body: "Space Grotesk", system-ui, sans-serif;
-        --mono: "Space Mono", ui-monospace, monospace;
-        color-scheme: dark;
       }
       [hidden] { display: none !important; }
-      body { margin: 0; background: var(--ink); color: var(--text); font-family: var(--body); font-size: 13px; }
+      body { margin: 0; background: var(--bg); color: var(--text); font-family: system-ui, sans-serif; }
       #unity-container { position: relative; width: 100%; height: calc(100vh - 230px); min-height: 480px; }
       #unity-canvas { display: block; width: 100%; height: 100%; background: #000; }
-      #loading { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; color: var(--cyan); font-family: var(--display); font-size: 14px; letter-spacing: 1px; }
-
-      .page-panel { max-width: 1600px; margin: 16px auto; padding: 0 16px; box-sizing: border-box; }
-      .neon-panel { background: var(--panel); border: 1px solid var(--pink); border-radius: 3px; padding: 16px 18px; }
-
-      .section-header, summary { display: flex; align-items: center; gap: 10px; }
-      summary { list-style: none; cursor: pointer; padding: 0; }
-      summary::-webkit-details-marker { display: none; }
-      .section-title { font-family: var(--display); font-size: 13px; letter-spacing: 1px; color: var(--cyan); white-space: nowrap; }
-      .section-rule { flex: 1; height: 1px; background: rgba(60, 242, 255, 0.35); }
-      .section-note { color: var(--muted); font-size: 12px; white-space: nowrap; }
-      .sparkle { width: 8px; height: 8px; background: var(--pink); transform: rotate(45deg); flex: none; }
-      .caret { color: var(--cyan); font-family: var(--mono); font-size: 12px; transition: transform 0.12s; }
-      details[open] .caret { transform: rotate(90deg); }
-      summary:focus-visible, button:focus-visible, .file-button:focus-within, select:focus-visible, input:focus-visible, textarea:focus-visible { outline: 1px solid var(--cyan); outline-offset: 2px; }
-
-      .actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 14px 0 10px; }
-      .actions label:first-child { color: var(--muted); margin-right: auto; }
-      button, .file-button {
-        height: 34px; box-sizing: border-box; display: inline-flex; align-items: center;
-        padding: 0 12px; border: 1px solid var(--cyan); border-radius: 2px;
-        background: transparent; color: var(--cyan); font: inherit; cursor: pointer;
-        transition: background-color 0.12s, color 0.12s;
-      }
-      button:hover, .file-button:hover { background: rgba(60, 242, 255, 0.12); }
-      button:active { background: rgba(60, 242, 255, 0.25); }
-      button:disabled { opacity: 0.35; cursor: default; background: transparent; }
-      button.primary { background: var(--pink); border-color: var(--pink); color: var(--ink); font-family: var(--display); letter-spacing: 1px; }
-      button.primary:hover { background: var(--pink-light); }
-      button.primary:active { background: var(--cyan); }
-      button.primary:disabled { background: var(--pink); }
+      #loading { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; color: var(--muted); }
+      .page-panel { max-width: 1600px; margin: 12px auto 24px; padding: 0 16px; box-sizing: border-box; }
+      .actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 8px; }
+      .actions label { color: var(--muted); margin-right: auto; }
+      button, .file-button { background: var(--panel); color: var(--text); border: 1px solid var(--border); border-radius: 8px; padding: 6px 12px; font: inherit; cursor: pointer; }
+      button:hover, .file-button:hover { border-color: var(--accent); }
+      button:disabled { opacity: 0.4; cursor: default; border-color: var(--border); }
+      button.primary { border-color: var(--accent); color: var(--accent); }
       .file-button input { display: none; }
+      textarea { width: 100%; height: 160px; box-sizing: border-box; background: var(--panel); color: var(--text); border: 1px solid var(--border); border-radius: 8px; padding: 8px; font-family: ui-monospace, monospace; font-size: 12px; resize: vertical; }
 
-      textarea { width: 100%; height: 160px; box-sizing: border-box; display: block; background: var(--field); color: var(--text); border: 1px solid var(--field-border); border-radius: 2px; padding: 8px 10px; font-family: var(--mono); font-size: 12px; resize: vertical; }
-      textarea:hover { border-color: var(--pink); }
-
-      .silhouette-body { display: flex; flex-direction: column; gap: 12px; }
-      .silhouette-body .actions { margin-bottom: 0; }
+      details { border: 1px solid var(--border); border-radius: 8px; background: var(--panel); }
+      summary { padding: 10px 14px; cursor: pointer; color: var(--text); }
+      summary span { color: var(--muted); margin-left: 8px; font-size: 13px; }
+      .silhouette-body { padding: 0 14px 14px; display: flex; flex-direction: column; gap: 12px; }
       .previews { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
-      @media (max-width: 700px) { .previews { grid-template-columns: minmax(0, 1fr); } .section-note { display: none; } }
+      @media (max-width: 700px) { .previews { grid-template-columns: minmax(0, 1fr); } }
       .preview { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
-      .preview-title { color: var(--muted); font-size: 12px; }
-      .preview canvas { width: 100%; max-height: 360px; object-fit: contain; background: #000; border: 1px solid var(--field-border); border-radius: 2px; }
-      #source-canvas { cursor: crosshair; background-image: linear-gradient(45deg, #15132e 25%, transparent 25%, transparent 75%, #15132e 75%), linear-gradient(45deg, #15132e 25%, transparent 25%, transparent 75%, #15132e 75%); background-size: 16px 16px; background-position: 0 0, 8px 8px; }
-
+      .preview-title { color: var(--muted); font-size: 13px; }
+      .preview canvas { width: 100%; max-height: 360px; object-fit: contain; background: #000; border: 1px solid var(--border); border-radius: 6px; }
+      #source-canvas { cursor: crosshair; background-image: linear-gradient(45deg, #1b1e36 25%, transparent 25%, transparent 75%, #1b1e36 75%), linear-gradient(45deg, #1b1e36 25%, transparent 25%, transparent 75%, #1b1e36 75%); background-size: 16px 16px; background-position: 0 0, 8px 8px; }
       .controls { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px 20px; align-items: center; }
-      .slider { display: grid; grid-template-columns: 7em minmax(0, 1fr) 3em; gap: 8px; align-items: center; color: var(--muted); }
-      .slider output { text-align: right; color: var(--text); font-family: var(--mono); font-size: 12px; }
-      .slider input { width: 100%; accent-color: var(--pink); }
-      .check { color: var(--muted); display: flex; gap: 8px; align-items: center; }
-      .check input { accent-color: var(--pink); }
-      select { height: 30px; background: var(--field); color: var(--text); border: 1px solid var(--field-border); border-radius: 2px; padding: 0 8px; font: inherit; }
-      select:hover { border-color: var(--pink); }
-      .swatches { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; color: var(--muted); font-size: 12px; }
-      .swatches i { width: 14px; height: 14px; border: 1px solid var(--field-border); border-radius: 2px; display: inline-block; }
-      #silhouette-status { min-height: 1.4em; color: var(--muted); font-family: var(--mono); font-size: 12px; }
+      .slider { display: grid; grid-template-columns: 8em minmax(0, 1fr) 3em; gap: 8px; align-items: center; color: var(--muted); font-size: 14px; }
+      .slider output { text-align: right; color: var(--text); font-variant-numeric: tabular-nums; }
+      .slider input { width: 100%; accent-color: var(--accent); }
+      .check { color: var(--muted); font-size: 14px; display: flex; gap: 8px; align-items: center; }
+      .check input { accent-color: var(--accent); }
+      .check select { background: var(--bg); color: var(--text); border: 1px solid var(--border); border-radius: 6px; padding: 4px 8px; font: inherit; }
+      .swatches { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; color: var(--muted); font-size: 13px; }
+      .swatches i { width: 16px; height: 16px; border: 1px solid var(--border); border-radius: 3px; display: inline-block; }
+      #silhouette-status { min-height: 1.4em; color: var(--muted); font-size: 14px; }
       #silhouette-status.error { color: var(--danger); }
-      #silhouette-status.ready { color: var(--pink); }
-
-      .names-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-top: 14px; }
-      @media (max-width: 700px) { .names-grid { grid-template-columns: minmax(0, 1fr); } }
-      .names-field { display: flex; flex-direction: column; gap: 6px; min-width: 0; color: var(--muted); font-size: 12px; }
-      .names-field small { color: var(--cyan); font-family: var(--mono); margin-left: 6px; }
-      .names-field textarea { height: 200px; }
-      .note { color: var(--muted); font-size: 12px; margin: 10px 0 0; max-width: 70ch; line-height: 1.5; }
+      #silhouette-status.ready { color: var(--accent); }
     </style>
   </head>
   <body>
@@ -105,8 +60,8 @@
     </div>
 
     <div class="page-panel" id="silhouette-section" hidden>
-      <details id="silhouette-panel" class="neon-panel">
-        <summary><span class="sparkle"></span><span class="section-title">SHAPE FROM IMAGE</span><span class="section-rule"></span><span class="section-note">Turn any picture into a map shape</span><span class="caret">&#9656;</span></summary>
+      <details id="silhouette-panel">
+        <summary>Shape from image<span>Turn any picture into a map shape</span></summary>
         <div class="silhouette-body">
           <div class="actions">
             <label>Load a picture. Click its background to mark colors as empty space.</label>
@@ -145,93 +100,15 @@
       </details>
     </div>
 
-    <div class="page-panel" id="names-section" hidden>
-      <div class="neon-panel">
-        <div class="section-header"><span class="sparkle"></span><span class="section-title">STAR NAMES</span><span class="section-rule"></span></div>
-        <div class="names-grid">
-          <label class="names-field"><span>Names<small id="names-count"></small></span>
-            <textarea id="names-list" spellcheck="false" placeholder="Glitter&#10;Peach&#10;Lipgloss&#10;Bubblegum"></textarea>
-          </label>
-          <label class="names-field"><span>Words to put in front<small id="prefixes-count"></small></span>
-            <textarea id="prefixes-list" spellcheck="false" placeholder="Baby&#10;Holo&#10;Disco&#10;Mega"></textarea>
-          </label>
-        </div>
-        <p class="note">One per line, or separated by commas. Stars get single names first, then two-word names like "Holo Peach". Tick Always two words in the menu to use only two-word names. Your lists are saved in this browser.</p>
-      </div>
-    </div>
-
-    <div class="page-panel" id="json-section">
-      <div class="neon-panel">
-      <div class="section-header"><span class="sparkle"></span><span class="section-title">MAP JSON</span><span class="section-rule"></span></div>
+    <div class="page-panel">
       <div class="actions">
-        <label for="jsonout">Paste a map's JSON or NP game data here, then press Import into map. Exported maps appear here too.</label>
+        <label for="jsonout">Map JSON: generated maps appear here, and Import JSON reads from here</label>
         <label class="file-button">Open file<input type="file" id="json-file" accept=".json,.txt"></label>
         <button type="button" id="copy-json">Copy</button>
         <button type="button" id="download-json">Download</button>
-        <button type="button" id="import-into-map" class="primary">Import into map</button>
       </div>
       <textarea id="jsonout" spellcheck="false"></textarea>
-      </div>
     </div>
-
-    <script>
-      (function () {
-        var lists = [["names-list", "names-count", "mapmaker.names"], ["prefixes-list", "prefixes-count", "mapmaker.prefixes"]];
-        lists.forEach(function (entry) {
-          var box = document.getElementById(entry[0]);
-          var counter = document.getElementById(entry[1]);
-          try {
-            box.value = localStorage.getItem(entry[2]) || "";
-          }
-          catch (error) {
-          }
-          function update() {
-            var seen = {};
-            box.value.split(/[\n,]/).forEach(function (item) {
-              var name = item.trim().toLowerCase();
-              if (name) {
-                seen[name] = true;
-              }
-            });
-            var count = Object.keys(seen).length;
-            counter.textContent = count ? count + (count === 1 ? " entry" : " entries") : "";
-          }
-          box.addEventListener("input", function () {
-            update();
-            try {
-              localStorage.setItem(entry[2], box.value);
-            }
-            catch (error) {
-            }
-          });
-          update();
-        });
-      })();
-    </script>
-
-    <script>
-      document.getElementById("import-into-map").onclick = function () {
-        if (window.mapmakerUnity) {
-          window.mapmakerUnity.SendMessage("UI", "ImportFromPage");
-        }
-      };
-
-      document.addEventListener("keydown", function (event) {
-        if (!(event.ctrlKey || event.metaKey) || !window.mapmakerUnity) {
-          return;
-        }
-        var target = event.target;
-        if (target && (target.tagName === "TEXTAREA" || target.tagName === "INPUT" || target.tagName === "SELECT")) {
-          return;
-        }
-        var key = (event.key || "").toLowerCase();
-        var action = key === "z" ? (event.shiftKey ? "redo" : "undo") : key === "y" ? "redo" : null;
-        if (action) {
-          event.preventDefault();
-          window.mapmakerUnity.SendMessage("UI", "PageShortcut", action);
-        }
-      });
-    </script>
 
     <script>
       var jsonBox = document.getElementById("jsonout");
@@ -641,8 +518,7 @@
       script.onload = function () {
         createUnityInstance(canvas, config, function (progress) {
           loading.textContent = "Loading " + Math.round(progress * 100) + "%";
-        }).then(function (instance) {
-          window.mapmakerUnity = instance;
+        }).then(function () {
           loading.style.display = "none";
         }).catch(function (message) {
           alert(message);
