@@ -216,6 +216,13 @@
         }
       };
 
+      var mapWasClickedLast = false;
+      var mapActions = { c: "copy", v: "paste", d: "duplicate", a: "selectAll" };
+
+      document.addEventListener("mousedown", function (event) {
+        mapWasClickedLast = event.target === document.getElementById("unity-canvas");
+      });
+
       document.addEventListener("keydown", function (event) {
         if (!(event.ctrlKey || event.metaKey) || !window.mapmakerUnity) {
           return;
@@ -226,8 +233,13 @@
         }
         var key = (event.key || "").toLowerCase();
         var action = key === "z" ? (event.shiftKey ? "redo" : "undo") : key === "y" ? "redo" : null;
+        if (!action && mapWasClickedLast && !event.altKey && !event.shiftKey) {
+          action = mapActions[key] || null;
+        }
         if (action) {
-          event.preventDefault();
+          if (action !== "copy" && action !== "paste") {
+            event.preventDefault();
+          }
           window.mapmakerUnity.SendMessage("UI", "PageShortcut", action);
         }
       });
